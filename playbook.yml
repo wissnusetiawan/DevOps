@@ -14,13 +14,13 @@
       - ansible_distribution == "Ubuntu"
     - name: pull image 
       docker_image:
-        name: ajizkai/apache-jenkins:latest
+        name: wisnu/apache-jenkins:latest
         pull: yes
         rm: yes
     - name: create container
       docker_container:
         name: container_by_jenkins
-        image: ajizkai/apache-jenkins:latest
+        image: wisnu/apache-jenkins:latest
         state: started
         published_ports:
           - 83:80
