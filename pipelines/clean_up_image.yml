@@ -1,0 +1,35 @@
+name: 1.0.$(Rev:r)
+
+trigger:
+    branches:
+      include:
+        - main
+
+schedules:
+    - cron: "0 0 * * *"
+      always: true
+      displayName: Daily build
+      branches:
+          include:
+            - main
+
+pool:
+    vmImage: ubuntu-22.04
+
+variables:
+  registry_name: 'testwisnuregistry'
+  repository_name: 'hello-world'
+  image: 'hello-world'
+
+steps:
+
+  - task: AzureCLI@2
+    displayName: Clean Docker Image
+    inputs:
+      azureSubscription: 'DevOps'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/scripts/'
+      scriptType: 'bash'
+      scriptLocation: 'scriptPath'
+      scriptPath: '$(System.DefaultWorkingDirectory)/scripts/clean-up-image.sh'
+      arguments: '$(registry_name) $(repository_name) $(image)'
+
