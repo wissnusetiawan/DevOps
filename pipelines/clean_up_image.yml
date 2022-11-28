@@ -26,7 +26,7 @@ steps:
   - task: AzureCLI@2
     displayName: Clean Docker Image
     inputs:
-      azureSubscription: 'DevOps'
+      azureSubscription: 'That DevOps Guy'
       scriptType: 'bash'
       scriptLocation: 'scriptPath'
       scriptPath: '$(System.DefaultWorkingDirectory)/bash-sscripts/clean-up-image.sh'
