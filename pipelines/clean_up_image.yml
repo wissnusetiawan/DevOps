@@ -14,10 +14,10 @@ schedules:
             - main
 
 pool:
-    vmImage: ubuntu-22.04
+    vmImage: ubuntu-latest
 
 variables:
-  registry_name: 'testwisnuregistry'
+  registry_name: 'DevOpsGuy'
   repository_name: 'hello-world'
   image: 'hello-world'
 
