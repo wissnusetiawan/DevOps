@@ -14,7 +14,7 @@ schedules:
             - main
 
 pool:
-    vmImage: ubuntu-22.04
+    vmImage: ubuntu-latest
 
 variables:
   registry_name: 'testwisnuregistry'
@@ -26,10 +26,10 @@ steps:
   - task: AzureCLI@2
     displayName: Clean Docker Image
     inputs:
-      azureSubscription: 'DevOps'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/scripts/'
+      azureSubscription: 'That DevOps Guy'
       scriptType: 'bash'
       scriptLocation: 'scriptPath'
-      scriptPath: '$(System.DefaultWorkingDirectory)/scripts/clean-up-image.sh'
+      scriptPath: '$(System.DefaultWorkingDirectory)/bash-scripts/clean-up-image.sh'
       arguments: '$(registry_name) $(repository_name) $(image)'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/bash-scripts/'
 
