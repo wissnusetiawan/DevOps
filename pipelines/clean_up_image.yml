@@ -18,7 +18,7 @@ pool:
 
 variables:
   registry_name: 'testwisnuregistry'
-  repository_name: 'hello-world'
+  repository_name: 'hello-world, nginx, traefik'
   image: 'hello-world'
 
 steps:
