@@ -23,22 +23,28 @@ fi
             echo "Show $registry_list info..."
 
 
-    UNTAGGED_IMGS=()
-    echo "${REPOSITORIES[@]}" | while read -r rep; do
-        UNTAGGED_IMGS=$(
+    # Search for untagged (dangling) images in each repository
+    echo "################################################"
+    echo "EXECUTION OF UNTAGGED (DANGLING) IMAGES DELETION"
+    echo "################################################"
+
+
+    untagged_image=()
+    echo "${registry_list[@]}" | while read -r rep; do
+        untagged_image=$(
             az acr repository show-manifests --name "$src_container_registry" --repository "$rep" \
                 --query "[?tags[0]==null].digest" \
                 --orderby time_asc \
                 --output tsv
         )
-        if [ -z "${UNTAGGED_IMGS[@]}" ]; then
+        if [ -z "${untagged_image[@]}" ]; then
             echo "INFO: No untagged (dangling) images found in the repository: $rep"
         else
             # Delete untagged (dangling) images
             echo
             echo "${UNTAGGED_IMGS[@]}" | while read -r img; do
                 echo "WARN: Deleting untagged (dangling) image: $rep@$img"
-                # az acr repository delete --name $src_container_registry --image $rep@$img --yes
+                az acr repository delete --name $src_container_registry --image $rep@$img --yes
             done
         fi
     done
