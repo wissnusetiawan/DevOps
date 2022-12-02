@@ -12,7 +12,7 @@ if [ $# -ne 3 ]; then
 fi
 
 echo "Validating ACR list..."
-registry_list=$(az acr repository list --name $src_container_registry -o json)
+registry_list=$(az acr repository list --query "[?name=='$src_container_registry'].{name:name}" -o json | jq -r '.[0]')
 if [ -z "$registry_list" ]; then
     echo -e "Error:\tEither src registry name $src_container_registry.\n$msg"
     exit -1

@@ -17,7 +17,7 @@ schedules:
 
 parameters:
   - name: src
-    displayName: Source system
+    displayName: Traefik
     type: string
     values:
       - TRAEFIK
