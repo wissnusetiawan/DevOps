@@ -57,7 +57,7 @@ else
     done
 
 
-    Search for images older than 30 days in each repository
+    # Search for images older than 30 days in each repository
     echo "################################################"
     echo "       EXECUTION OF OLD IMAGES DELETION"
     echo "################################################"
