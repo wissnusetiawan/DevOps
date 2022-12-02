@@ -62,9 +62,9 @@ steps:
     displayName: Clean Docker Image
     inputs:
       azureSubscription: 'That DevOps Guy'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/scripts/'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/bash-scripts/'
       scriptType: 'bash'
       scriptLocation: 'scriptPath'
-      scriptPath: '$(System.DefaultWorkingDirectory)/scripts/clean-up-image.sh'
+      scriptPath: '$(System.DefaultWorkingDirectory)/bash-scripts/clean-up-image.sh'
       arguments: '$(registry_name) $(repository_name) $(image)'
 
