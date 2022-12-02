@@ -129,13 +129,13 @@ else
 
 
 
-echo "Validating ACR tag..."
-registry_tags=$(az acr repository show-tags --name $src_container_registry --repository $src_repository_name --top 100 --orderby time_desc --detail --query '[].name' -o tsv)
-if [ -z "$registry_tags" ]; then
-    echo -e "Error:\tEither src repository name $src_repository_name.\n$msg"
-    exit -1
-fi
-echo "Show $registry_tags info..."
+# echo "Validating ACR tag..."
+# registry_tags=$(az acr repository show-tags --name $src_container_registry --repository $src_repository_name --top 100 --orderby time_desc --detail --query '[].name' -o tsv)
+# if [ -z "$registry_tags" ]; then
+#     echo -e "Error:\tEither src repository name $src_repository_name.\n$msg"
+#     exit -1
+# fi
+# echo "Show $registry_tags info..."
 
 
 # show_manifests=$(
@@ -145,8 +145,8 @@ echo "Show $registry_tags info..."
 # echo "Show $show_manifests info..."
 
 
-echo "ACR delete image info..."
-az acr repository show-manifests --name "$src_container_registry" --repository "$src_repository_name" \
-         --orderby time_desc -o tsv --query '[].digest' | sed -n '100,$ p' | xargs -I% az acr repository delete \
-         --name "$src_container_registry" --image $src_image@% --yes
+# echo "ACR delete image info..."
+# az acr repository show-manifests --name "$src_container_registry" --repository "$src_repository_name" \
+#          --orderby time_desc -o tsv --query '[].digest' | sed -n '100,$ p' | xargs -I% az acr repository delete \
+#          --name "$src_container_registry" --image $src_image@% --yes
 
