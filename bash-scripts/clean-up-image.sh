@@ -12,12 +12,13 @@ if [ $# -ne 3 ]; then
 fi
 
 echo "Validating ACR list..."
-registry_list=$(az acr repository list --query "[?name=='$src_container_registry'].{name:name}" -o json | jq -r '.[0]')
+registry_list=$(az acr repository list --query "[?name=='$src_container_registry'].{name:name, group:resourceGroup}" -o json | jq -r '.[0]')
 if [ -z "$registry_list" ]; then
     echo -e "Error:\tEither src registry name $src_container_registry.\n$msg"
     exit -1
 fi
-echo "Show $registry_list info..."
+# echo "Show $registry_list info..."
+src_resource_group=$(echo $registry_list | jq -r '.group')
 
 echo "Validating ACR tag..."
 registry_tags=$(az acr repository show-tags --name $src_container_registry --repository $src_repository_name --top 10 --orderby time_desc --detail --query '[].name' -o tsv)
