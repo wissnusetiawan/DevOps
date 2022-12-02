@@ -66,5 +66,5 @@ steps:
       scriptType: 'bash'
       scriptLocation: 'scriptPath'
       scriptPath: '$(System.DefaultWorkingDirectory)/bash-scripts/clean-up-image.sh'
-      arguments: '$(registry_name) $(repository_name) $(image)'
+      arguments: '$(src_container_registry) $(src_repository_name) $(src_image)'
 
