@@ -127,8 +127,6 @@ else
                 done
             else
                 echo "INFO: Nothing to do. There is only 1 image in the repository: $rep"
-                    fi
-                done
             else
                 echo "WARN: Deleting image with keep 100 from image: $rep@$img"
                 # az acr repository show-manifests --name "$src_container_registry" --repository "$src_repository_name" \
