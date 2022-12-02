@@ -122,19 +122,22 @@ else
 
                         # Delete images older than 30 days
                         echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
-                        # az acr repository delete --name $src_container_registry --image $rep@$image_manifest_only --yes
+                        az acr repository delete --name $src_container_registry --image $rep@$image_manifest_only --yes
                     # else
                         # echo "INFO: Nothing to do. There is only 1 image in the repository: $rep"
                     fi
                 done
             else
+                echo "INFO: Nothing to do. There is only 1 image in the repository: $rep"
+            fi
+        fi
+    done
+    else
                 echo "WARN: Deleting image with keep 100 from image: $rep@$img"
             # else
             #     echo "WARN: Deleting image with keep 100 from image: $rep@$img"
                 az acr repository show-manifests --name "$src_container_registry" --repository "$src_repository_name" \
                          --orderby time_desc -o tsv --query '[].digest' | sed -n '100,$ p' | xargs -I% az acr repository delete \
                          --name "$src_container_registry" --image $src_image@% --yes
-            fi
-        fi
-    done
+
 fi
