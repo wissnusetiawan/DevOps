@@ -132,12 +132,13 @@ else
             fi
         fi
     done
-    else
+fi
+else
                 echo "WARN: Deleting image with keep 100 from image: $rep@$img"
             # else
             #     echo "WARN: Deleting image with keep 100 from image: $rep@$img"
                 az acr repository show-manifests --name "$src_container_registry" --repository "$src_repository_name" \
                          --orderby time_desc -o tsv --query '[].digest' | sed -n '100,$ p' | xargs -I% az acr repository delete \
                          --name "$src_container_registry" --image $src_image@% --yes
-
-fi
+        fi
+    done
