@@ -133,7 +133,7 @@ else
         fi
     done
 fi
-else
+if
                 echo "WARN: Deleting image with keep 100 from image: $rep@$img"
             # else
             #     echo "WARN: Deleting image with keep 100 from image: $rep@$img"
