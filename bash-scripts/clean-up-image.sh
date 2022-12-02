@@ -123,8 +123,8 @@ else
                         # Delete images older than 30 days
                         echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
                         # az acr repository delete --name $src_container_registry --image $rep@$image_manifest_only --yes
-                    else
-                        echo "INFO: Nothing to do. There is only 1 image in the repository: $rep"
+                    # else
+                        # echo "INFO: Nothing to do. There is only 1 image in the repository: $rep"
                     fi
                 done
             else
