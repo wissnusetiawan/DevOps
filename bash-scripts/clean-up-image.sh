@@ -30,6 +30,12 @@ else
             echo "Show $registry_list info..."
 
 
+                echo "Show Deleting image with keep 100 from image: $rep@$img"
+                az acr repository show-manifests --name "$src_container_registry" --repository "$src_repository_name" \
+                         --orderby time_desc -o tsv --query '[].digest' | sed -n '100,$ p' | xargs -I% az acr repository delete \
+                         --name "$src_container_registry" --image $src_image@% --yes
+
+
     # Search for untagged (dangling) images in each repository
     echo "################################################"
     echo "EXECUTION OF UNTAGGED (DANGLING) IMAGES DELETION"
@@ -56,37 +62,7 @@ else
         fi
     done
 
-
-
-    keep_image=()
-    echo "${registry_list[@]}" | while read -r rep; do
-        keep_image=$(
-                echo "WARN: Deleting image with keep 100 from image: $rep@$img"
-                az acr repository show-manifests --name "$src_container_registry" --repository "$src_repository_name" \
-                         --orderby time_desc -o tsv --query '[].digest' | sed -n '100,$ p' | xargs -I% az acr repository delete \
-                         --name "$src_container_registry" --image $src_image@% --yes
-
-            # az acr repository show-manifests --name "$src_container_registry" --repository "$rep" \
-            #     --query "[?tags[0]==null].digest" \
-            #     --orderby time_asc \
-            #     --output tsv
-        )
-
-
-        # if [ -z "${keep_image[@]}" ]; then
-        #     echo "INFO: No untagged (dangling) images found in the repository: $rep"
-        # else
-        #     # Delete untagged (dangling) images
-        #     echo
-        #     echo "${keep_image[@]}" | while read -r img; do
-        #         echo "WARN: Deleting image with keep 100 from image: $rep@$img"
-        #         az acr repository delete --name $src_container_registry --image $rep@$img --yes
-        #     done
-        # fi
-    done
-
-
-
+ 
     # Search for images older than 30 days in each repository
     echo "################################################"
     echo "       EXECUTION OF OLD IMAGES DELETION"
