@@ -115,14 +115,14 @@ else
                     last_update_image="$(date -d "$last_update_image" +%s)"
 
                     if [ "$last_update_repo" -gt "$last_update_image" ]; then
-                        IMG_TO_DELETE=$(
+                        image_to_delete=$(
                             az acr repository show --name "$src_container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
                                 grep -A1 'tags:' | tail -n1 | awk '{ print $2}'
                         )
 
                         # Delete images older than 30 days
-                        echo "WARN: Deleting image with tag: $IMG_TO_DELETE from repository: $rep"
-                        # az acr repository delete --name $src_container_registry --image $rep@$image_manifest_only --yes
+                        echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
+                        az acr repository delete --name $src_container_registry --image $rep@$image_manifest_only --yes
                     fi
                 done
             else
