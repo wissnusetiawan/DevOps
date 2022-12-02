@@ -12,19 +12,38 @@ if [ $# -ne 3 ]; then
 fi
 
 
-# Fetch the list of repositories
-registry_list=()
-registry_list="$(az acr repository list -n "$src_container_registry" -o json)"
+    # Fetch the list of repositories
+    registry_list=()
+    registry_list="$(az acr repository list -n "$src_container_registry" --output tsv)"
+
+        if [ -z "$registry_list" ]; then
+            echo -e "Error:\tEither src registry name $src_container_registry.\n$msg"
+            exit -1
+        fi
+            echo "Show $registry_list info..."
 
 
+    UNTAGGED_IMGS=()
+    echo "${REPOSITORIES[@]}" | while read -r rep; do
+        UNTAGGED_IMGS=$(
+            az acr repository show-manifests --name "$src_container_registry" --repository "$rep" \
+                --query "[?tags[0]==null].digest" \
+                --orderby time_asc \
+                --output tsv
+        )
+        if [ -z "${UNTAGGED_IMGS[@]}" ]; then
+            echo "INFO: No untagged (dangling) images found in the repository: $rep"
+        else
+            # Delete untagged (dangling) images
+            echo
+            echo "${UNTAGGED_IMGS[@]}" | while read -r img; do
+                echo "WARN: Deleting untagged (dangling) image: $rep@$img"
+                # az acr repository delete --name $src_container_registry --image $rep@$img --yes
+            done
+        fi
+    done
 
-# echo "Validating ACR list..."
-# registry_list=$(az acr repository list --name $src_container_registry -o json)
-# if [ -z "$registry_list" ]; then
-#     echo -e "Error:\tEither src registry name $src_container_registry.\n$msg"
-#     exit -1
-# fi
-echo "Show $registry_list info..."
+
 
 echo "Validating ACR tag..."
 registry_tags=$(az acr repository show-tags --name $src_container_registry --repository $src_repository_name --top 100 --orderby time_desc --detail --query '[].name' -o tsv)
