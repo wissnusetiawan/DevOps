@@ -16,20 +16,21 @@ schedules:
             - main
 
 parameters:
-  - name: Test Traefik
-    displayName: Example Traefik
+  - name: src
+    displayName: Source system
     type: string
     values:
-      - nginx
-    default: WISNU
-    
-  - name: Test Nginx
-    displayName: Example Nginx
-    type: string
-    values:
-      - nginx
-    default: WISNU
+      - TRAEFIK
 
+    # default: WISNU
+  # - name: dst
+  #   displayName: Target system
+  #   type: string
+  #   values:
+  #     - TRAEFIK
+  #     - STAGING
+  #     - WISNU
+  #   default: WISNU
   - name: skipConfig  
     displayName: Skip Config
     type: boolean
@@ -40,20 +41,20 @@ pool:
     vmImage: ubuntu-22.04
 
 variables:
-  registry_name: 'testwisnuregistry'
-  repository_name: 'hello-world'
-  image: 'hello-world'
+  # registry_name: 'testwisnuregistry'
+  # repository_name: 'hello-world'
+  # image: 'hello-world'
   
-  ${{ if eq(parameters.src, 'WISNU')}}:
-      src_container_registry: 'wisnu'
+  ${{ if eq(parameters.src, 'TRAEFIK')}}:
+      src_container_registry: 'DevOpsGuy'
       src_repository_name: 'traefik'
       src_image: 'traefik'
 
 
-  ${{ if eq(parameters.dst, 'WISNU')}}:
-      dst_resource_group: 'wisnu'
-      dst_server: 'testdstwisnu'
-      dst_dbname: 'testdstdb'
+  # ${{ if eq(parameters.dst, 'WISNU')}}:
+  #     dst_resource_group: 'wisnu'
+  #     dst_server: 'testdstwisnu'
+  #     dst_dbname: 'testdstdb'
 
 steps:
 
