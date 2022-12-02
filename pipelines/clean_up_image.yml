@@ -61,7 +61,7 @@ steps:
   - task: AzureCLI@2
     displayName: Clean Docker Image
     inputs:
-      azureSubscription: 'DevOps'
+      azureSubscription: 'That DevOps Guy'
       workingDirectory: '$(System.DefaultWorkingDirectory)/scripts/'
       scriptType: 'bash'
       scriptLocation: 'scriptPath'
