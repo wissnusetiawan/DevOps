@@ -122,36 +122,19 @@ else
 
                         # Delete images older than 30 days
                         echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
-                        az acr repository delete --name $src_container_registry --image $rep@$image_manifest_only --yes
+                        # az acr repository delete --name $src_container_registry --image $rep@$image_manifest_only --yes
                     fi
                 done
             else
                 echo "INFO: Nothing to do. There is only 1 image in the repository: $rep"
+                    fi
+                done
+            else
+                echo "WARN: Deleting image with keep 100 from image: $rep@$img"
+                # az acr repository show-manifests --name "$src_container_registry" --repository "$src_repository_name" \
+                #          --orderby time_desc -o tsv --query '[].digest' | sed -n '100,$ p' | xargs -I% az acr repository delete \
+                #          --name "$src_container_registry" --image $src_image@% --yes
             fi
         fi
     done
 fi
-
-
-
-# echo "Validating ACR tag..."
-# registry_tags=$(az acr repository show-tags --name $src_container_registry --repository $src_repository_name --top 100 --orderby time_desc --detail --query '[].name' -o tsv)
-# if [ -z "$registry_tags" ]; then
-#     echo -e "Error:\tEither src repository name $src_repository_name.\n$msg"
-#     exit -1
-# fi
-# echo "Show $registry_tags info..."
-
-
-# show_manifests=$(
-#     az acr repository show-manifests --name "$src_container_registry" --repository "$src_repository_name" --top 100 --query '[].tags' \
-#     --output tsv 
-#     )
-# echo "Show $show_manifests info..."
-
-
-# echo "ACR delete image info..."
-# az acr repository show-manifests --name "$src_container_registry" --repository "$src_repository_name" \
-#          --orderby time_desc -o tsv --query '[].digest' | sed -n '100,$ p' | xargs -I% az acr repository delete \
-#          --name "$src_container_registry" --image $src_image@% --yes
-
