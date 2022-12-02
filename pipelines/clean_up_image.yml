@@ -67,10 +67,3 @@ steps:
       scriptPath: '$(System.DefaultWorkingDirectory)/scripts/clean-up-image.sh'
       arguments: '$(registry_name) $(repository_name) $(image)'
 
-    - task: AzureCLI@2
-      inputs:
-        azureSubscription: 'DevOps'
-        scriptType: 'bash'
-        scriptLocation: 'scriptPath'
-        scriptPath: '$(System.DefaultWorkingDirectory)/scripts/db-copy.sh'
-        arguments: '$(src_resource_group) $(src_server) $(src_dbname) $(dst_resource_group) $(dst_server) $(dst_dbname)'
