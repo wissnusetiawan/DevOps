@@ -1,5 +1,7 @@
 name: 1.0.$(Rev:r)
 
+pr: none
+
 trigger:
     branches:
       include:
@@ -13,23 +15,62 @@ schedules:
           include:
             - main
 
+parameters:
+  - name: Test Traefik
+    displayName: Example Traefik
+    type: string
+    values:
+      - nginx
+    default: WISNU
+    
+  - name: Test Nginx
+    displayName: Example Nginx
+    type: string
+    values:
+      - nginx
+    default: WISNU
+
+  - name: skipConfig  
+    displayName: Skip Config
+    type: boolean
+    default: true
+
+
 pool:
-    vmImage: ubuntu-latest
+    vmImage: ubuntu-22.04
 
 variables:
   registry_name: 'testwisnuregistry'
-  repository_name: 'hello-world, nginx, traefik'
+  repository_name: 'hello-world'
   image: 'hello-world'
+  
+  ${{ if eq(parameters.src, 'WISNU')}}:
+      src_container_registry: 'wisnu'
+      src_repository_name: 'traefik'
+      src_image: 'traefik'
+
+
+  ${{ if eq(parameters.dst, 'WISNU')}}:
+      dst_resource_group: 'wisnu'
+      dst_server: 'testdstwisnu'
+      dst_dbname: 'testdstdb'
 
 steps:
 
   - task: AzureCLI@2
     displayName: Clean Docker Image
     inputs:
-      azureSubscription: 'That DevOps Guy'
+      azureSubscription: 'DevOps'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/scripts/'
       scriptType: 'bash'
       scriptLocation: 'scriptPath'
-      scriptPath: '$(System.DefaultWorkingDirectory)/bash-scripts/clean-up-image.sh'
+      scriptPath: '$(System.DefaultWorkingDirectory)/scripts/clean-up-image.sh'
       arguments: '$(registry_name) $(repository_name) $(image)'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/bash-scripts/'
 
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'DevOps'
+        scriptType: 'bash'
+        scriptLocation: 'scriptPath'
+        scriptPath: '$(System.DefaultWorkingDirectory)/scripts/db-copy.sh'
+        arguments: '$(src_resource_group) $(src_server) $(src_dbname) $(dst_resource_group) $(dst_server) $(dst_dbname)'
