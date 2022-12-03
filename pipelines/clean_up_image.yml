@@ -46,9 +46,9 @@ variables:
   # image: 'hello-world'
   
   ${{ if eq(parameters.src, 'TRAEFIK')}}:
-      src_container_registry: 'DevOpsGuy'
-      src_repository_name: 'traefik'
-      src_image: 'traefik'
+      container_registry: 'DevOpsGuy'
+      repository_name: 'traefik'
+      image: 'traefik'
 
 
   # ${{ if eq(parameters.dst, 'WISNU')}}:
