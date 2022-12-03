@@ -30,10 +30,18 @@ else
             echo "Show $registry_list info..."
 
 
-                echo "Show Deleting image with keep 100 from image: $rep@$img"
+    keep_image=()
+        keep_image=$(
                 az acr repository show-manifests --name "$src_container_registry" --repository "$src_repository_name" \
                          --orderby time_desc -o tsv --query '[].digest' | sed -n '100,$ p' | xargs -I% az acr repository delete \
                          --name "$src_container_registry" --image $src_image@% --yes
+     )
+        if [ -z "$keep_image" ]; then
+            echo -e "Error:\tEither src registry name $src_container_registry.\n$msg"
+            exit -1
+        fi
+
+                     echo "Show Deleting image with keep 100 from image: $rep@$img"
 
 
     # Search for untagged (dangling) images in each repository
