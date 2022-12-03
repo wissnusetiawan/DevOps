@@ -30,33 +30,33 @@ else
             echo "Show $registry_list info..."
 
 
-    # Search for keep images than 100 in each repository
-    echo "################################################"
-    echo "       EXECUTION OF KEEP IMAGES DELETION"
-    echo "################################################"
+    # # Search for keep images than 100 in each repository
+    # echo "################################################"
+    # echo "       EXECUTION OF KEEP IMAGES DELETION"
+    # echo "################################################"
 
 
-    keep_image=()
-    echo "${registry_list[@]}" | while read -r rep; do
-        keep_image=$(
-            az acr repository show-manifests --name "$container_registry" --repository "$rep" \
-                --query "[?tags[0]==null].digest" \
-                --orderby time_desc \
-                --output tsv 
-     )
-        if [ -z "${keep_image[@]}" ]; then
-            echo "INFO: Deleting image with keep 100 from image: $rep"
-        else
-            # Keep 100 images
-            echo
-            echo "${keep_image[@]}" | while read -r img; do
-                echo "WARN: Deleting image with keep 100 from image: $rep@$img"
-                az acr repository show-manifests --name "$container_registry" --repository "$rep" \
-                    | sed -n '100,$ p' | xargs -I% az acr repository delete \
-                    --name "$container_registry" --image $rep@$img% --yes
-            done
-        fi
-    done
+    # keep_image=()
+    # echo "${registry_list[@]}" | while read -r rep; do
+    #     keep_image=$(
+    #         az acr repository show-manifests --name "$container_registry" --repository "$rep" \
+    #             --query "[?tags[0]==null].digest" \
+    #             --orderby time_desc \
+    #             --output tsv 
+    #  )
+    #     if [ -z "${keep_image[@]}" ]; then
+    #         echo "INFO: Deleting image with keep 100 from image: $rep"
+    #     else
+    #         # Keep 100 images
+    #         echo
+    #         echo "${keep_image[@]}" | while read -r img; do
+    #             echo "WARN: Deleting image with keep 100 from image: $rep@$img"
+    #             az acr repository show-manifests --name "$container_registry" --repository "$rep" \
+    #                 | sed -n '100,$ p' | xargs -I% az acr repository delete \
+    #                 --name "$container_registry" --image $rep@$img% --yes
+    #         done
+    #     fi
+    # done
 
 
     # Search for untagged (dangling) images in each repository
@@ -150,25 +150,8 @@ else
 
                         # Delete images older than 30 days
                         echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
-                        
                         az acr repository delete --name $container_registry --image $rep@$image_manifest_only% --yes
-
                     fi
-
-                    # if [ "$last_update_repo" -gt "$last_update_image" ]; then
-                    #     image_to_delete=$(
-
-                    #         az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
-                    #             grep -A1 'tags:' | tail -n1 | awk '{ print $2}'
-                    #     )
-
-                    #     # Delete images older than 30 days
-                    #     echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
-                    #     # az acr repository delete --name $container_registry --image $rep@$image_manifest_only --yes
-                    #     az acr repository show-manifests --name "$container_registry" --repository "$rep" \
-                    #         | sed -n '100,$ p' | xargs -I% az acr repository delete \
-                    #         --name "$container_registry" --image $rep@$img% --yes
-                    # fi
 
                 done
             else
