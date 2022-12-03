@@ -36,11 +36,6 @@ else
                          --orderby time_desc -o tsv --query '[].digest' | sed -n '100,$ p' | xargs -I% az acr repository delete \
                          --name "$src_container_registry" --image $src_image@% --yes
      )
-        if [ -z "$keep_image" ]; then
-            echo -e "Error:\tEither src registry name $src_container_registry.\n$msg"
-            exit -1
-        fi
-
                      echo "Show Deleting image with keep 100 from image: $rep@$img"
 
 
