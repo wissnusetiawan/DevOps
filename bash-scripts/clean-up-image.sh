@@ -43,12 +43,12 @@ else
                 --query "[?tags[0]==null].digest" \
                 --orderby time_desc \
                 --output tsv 
-    
      )
         if [ -z "${keep_image[@]}" ]; then
-            echo "INFO: Deleting image with keep 100 from image: $rep@$img"
+            echo "INFO: Deleting image with keep 100 from image: $rep"
         else
             # Keep 100 images
+            echo
             echo "${keep_image[@]}" | while read -r img; do
                 echo "WARN: Deleting image with keep 100 from image: $rep@$img"
                 az acr repository show-manifests --name "$container_registry" --repository "$rep" \
