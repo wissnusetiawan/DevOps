@@ -5,8 +5,8 @@ set -e
 
 
 # Check if correct parameters were passed
-msg="\tUsage:\t$0 <src container registry> <src repository name> <src image>\n"
-if [ $# -ne 3 ]; then
+msg="\tUsage:\t$0 <container registry>\n"
+if [ $# -ne 1 ]; then
     echo -e $msg
     exit -1
 else
@@ -14,8 +14,6 @@ else
 
     # Declare variables
     container_registry=$1
-    repository_name=$2
-    image=$3
     date_threshold="$(date +%Y-%m-%d -d "30 days ago")"
 
 
@@ -24,7 +22,7 @@ else
     registry_list="$(az acr repository list -n "$container_registry" --output tsv)"
 
         if [ -z "$registry_list" ]; then
-            echo -e "Error:\tEither src registry name $container_registry.\n$msg"
+            echo -e "Error:\tEither registry name $container_registry.\n$msg"
             exit -1
         fi
             echo "Show $registry_list info..."
