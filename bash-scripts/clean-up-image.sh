@@ -33,11 +33,24 @@ else
     keep_image=()
     echo "${registry_list[@]}" | while read -r rep; do
         keep_image=$(
-            az acr repository show-manifests --name "$src_container_registry" --repository "$src_repository_name" \
-                --orderby time_desc -o tsv --query '[].digest' | sed -n '100,$ p' | xargs -I% az acr repository delete \
-                --name "$src_container_registry" --image $src_image@% --yes
+            az acr repository show-manifests --name "$src_container_registry" --repository "$rep" \
+                --query "[?tags[0]==null].digest" \
+                --orderby time_asc \
+                --output tsv
      )
-            echo "Show Deleting image with keep 100 from image: $rep@$img"
+        if [ -z "${keep_image[@]}" ]; then
+            echo "INFO: Deleting image with keep 100 from image: $rep@$img"
+        else
+            # Keep 100 images
+            echo "${keep_image[@]}" | while read -r img; do
+                echo "WARN: Deleting image with keep 100 from image: $rep@$img"
+                az acr repository show-manifests --name "$src_container_registry" --repository "$src_repository_name" \
+                    --orderby time_desc -o tsv --query '[].digest' | sed -n '100,$ p' | xargs -I% az acr repository delete \
+                    --name "$src_container_registry" --image $src_image@% --yes
+            done
+        fi
+    done
+
 
 
     # Search for untagged (dangling) images in each repository
