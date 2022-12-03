@@ -145,7 +145,7 @@ else
                     if [ "$last_update_repo" -gt "$last_update_image" ]; then
                         image_to_delete=$(
                             az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
-                                grep -A1 'tags:' | tail -n1 | | sed -n '100,$ p' | xargs -I% awk '{ print $2}'
+                                grep -A1 'tags:' | tail -n1 | sed -n '100,$ p' | xargs -I% awk '{ print $2}'
                         )
 
                         # Delete images older than 30 days
