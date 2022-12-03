@@ -16,73 +16,55 @@ schedules:
             - main
 
 parameters:
-  - name: keep
-    displayName: KEEP IMAGES DELETION
-    type: string
-    values:
-      - Keep image
-  #   default: TRAEFIK
-
-    # default: WISNU
-
-  - name: old
-    displayName: OLD IMAGES DELETION
+  - name: src
+    displayName: Traefik
     type: string
     values:
       - TRAEFIK
-      - STAGING
-      - WISNU
-  #   default: WISNU
-  - name: keepImage
-    displayName: Keep Image?
-    type: boolean
-    default: false
 
-  - name: deleteUntagged
-    displayName: Delete untagged
+    # default: WISNU
+  # - name: dst
+  #   displayName: Target system
+  #   type: string
+  #   values:
+  #     - TRAEFIK
+  #     - STAGING
+  #     - WISNU
+  #   default: WISNU
+  - name: skipConfig  
+    displayName: Skip Config
     type: boolean
     default: true
-
-  - name: removeLockfile
-    displayName: Ignore yarn.lock?
-    type: boolean
-    default: false
 
 
 pool:
     vmImage: ubuntu-22.04
 
 variables:
+  # registry_name: 'testwisnuregistry'
+  # repository_name: 'hello-world'
+  # image: 'hello-world'
   
-  # ${{ if eq(parameters.keep, 'Delete keep image')}}:
-    container_registry: 'DevOpsGuy'
+  ${{ if eq(parameters.src, 'TRAEFIK')}}:
+      container_registry: 'DevOpsGuy'
+      repository_name: 'traefik'
+      image: 'traefik'
 
-  # ${{ if eq(parameters.untagged, 'Delete untagged')}}:
-      # container_registry: 'DevOpsGuy'
 
-  # ${{ if eq(parameters.old, 'Delete images older than 30 days')}}:
-      # container_registry: 'DevOpsGuy'
-
+  # ${{ if eq(parameters.dst, 'WISNU')}}:
+  #     dst_resource_group: 'wisnu'
+  #     dst_server: 'testdstwisnu'
+  #     dst_dbname: 'testdstdb'
 
 steps:
-  - task: AzureCLI@2
-    displayName: Keep docker image
-    inputs:
-      azureSubscription: 'That DevOps Guy'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/bash-scripts/'
-      scriptType: 'bash'
-      scriptLocation: 'scriptPath'
-      scriptPath: '$(System.DefaultWorkingDirectory)/bash-scripts/clean-up-image.sh'
-      arguments: '$(container_registry)'
-    condition: not(${{parameters.keepImage}})
 
   - task: AzureCLI@2
-    displayName: Keep docker image
+    displayName: Clean Docker Image
     inputs:
       azureSubscription: 'That DevOps Guy'
       workingDirectory: '$(System.DefaultWorkingDirectory)/bash-scripts/'
       scriptType: 'bash'
       scriptLocation: 'scriptPath'
       scriptPath: '$(System.DefaultWorkingDirectory)/bash-scripts/clean-up-image.sh'
-      arguments: '$(container_registry)'
-    condition: not(${{parameters.deleteUntagged}})
+      arguments: '$(container_registry) $(repository_name) $(image)'
+
