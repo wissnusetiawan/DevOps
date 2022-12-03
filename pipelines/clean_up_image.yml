@@ -15,47 +15,14 @@ schedules:
           include:
             - main
 
-parameters:
-  - name: src
-    displayName: Traefik
-    type: string
-    values:
-      - TRAEFIK
-
-    # default: WISNU
-  # - name: dst
-  #   displayName: Target system
-  #   type: string
-  #   values:
-  #     - TRAEFIK
-  #     - STAGING
-  #     - WISNU
-  #   default: WISNU
-  - name: skipConfig  
-    displayName: Skip Config
-    type: boolean
-    default: true
-
 
 pool:
     vmImage: ubuntu-22.04
 
 variables:
-  # registry_name: 'testwisnuregistry'
-  # repository_name: 'hello-world'
-  # image: 'hello-world'
+    container_registry: 'DevOpsGuy'
+
   
-  ${{ if eq(parameters.src, 'TRAEFIK')}}:
-      container_registry: 'DevOpsGuy'
-      repository_name: 'traefik'
-      image: 'traefik'
-
-
-  # ${{ if eq(parameters.dst, 'WISNU')}}:
-  #     dst_resource_group: 'wisnu'
-  #     dst_server: 'testdstwisnu'
-  #     dst_dbname: 'testdstdb'
-
 steps:
 
   - task: AzureCLI@2
@@ -66,5 +33,5 @@ steps:
       scriptType: 'bash'
       scriptLocation: 'scriptPath'
       scriptPath: '$(System.DefaultWorkingDirectory)/bash-scripts/clean-up-image.sh'
-      arguments: '$(container_registry) $(repository_name) $(image)'
+      arguments: '$(container_registry)'
 
