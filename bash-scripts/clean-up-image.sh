@@ -150,23 +150,25 @@ else
 
                         # Delete images older than 30 days
                         echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
-                        az acr repository delete --name $container_registry --image $rep@$image_manifest_only --yes
+                        | sed -n '100,$ p' | xargs -I%
+                        az acr repository delete --name $container_registry --image $rep@$image_manifest_only% --yes
 
                     fi
 
-                    if [ "$last_update_repo" -gt "$last_update_image" ]; then
-                        image_to_delete=$(
-                            az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
-                                grep -A1 'tags:' | tail -n1 | awk '{ print $2}'
-                        )
+                    # if [ "$last_update_repo" -gt "$last_update_image" ]; then
+                    #     image_to_delete=$(
 
-                        # Delete images older than 30 days
-                        echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
-                        # az acr repository delete --name $container_registry --image $rep@$image_manifest_only --yes
-                        az acr repository show-manifests --name "$container_registry" --repository "$rep" \
-                            | sed -n '100,$ p' | xargs -I% az acr repository delete \
-                            --name "$container_registry" --image $rep@$img% --yes
-                    fi
+                    #         az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
+                    #             grep -A1 'tags:' | tail -n1 | awk '{ print $2}'
+                    #     )
+
+                    #     # Delete images older than 30 days
+                    #     echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
+                    #     # az acr repository delete --name $container_registry --image $rep@$image_manifest_only --yes
+                    #     az acr repository show-manifests --name "$container_registry" --repository "$rep" \
+                    #         | sed -n '100,$ p' | xargs -I% az acr repository delete \
+                    #         --name "$container_registry" --image $rep@$img% --yes
+                    # fi
 
                 done
             else
