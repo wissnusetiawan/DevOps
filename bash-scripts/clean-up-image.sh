@@ -30,6 +30,12 @@ else
             echo "Show $registry_list info..."
 
 
+    # Search for keep images than 100 in each repository
+    echo "################################################"
+    echo "       EXECUTION OF KEEP IMAGES DELETION"
+    echo "################################################"
+
+
     keep_image=()
     echo "${registry_list[@]}" | while read -r rep; do
         keep_image=$(
@@ -50,7 +56,6 @@ else
             done
         fi
     done
-
 
 
     # Search for untagged (dangling) images in each repository
@@ -159,7 +164,6 @@ else
                         az acr repository delete --name $src_container_registry --image $rep@$image_manifest_only --yes
 
                     fi
-
 
                 done
             else
