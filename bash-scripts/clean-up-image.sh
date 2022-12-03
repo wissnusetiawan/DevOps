@@ -50,9 +50,9 @@ else
             # Keep 100 images
             echo "${keep_image[@]}" | while read -r img; do
                 echo "WARN: Deleting image with keep 100 from image: $rep@$img"
-                az acr repository show-manifests --name "$container_registry" --repository "$repository_name" \
+                az acr repository show-manifests --name "$container_registry" --repository "$rep" \
                     --orderby time_desc -o tsv --query '[].digest' | sed -n '100,$ p' | xargs -I% az acr repository delete \
-                    --name "$container_registry" --image $image@% --yes
+                    --name "$container_registry" --image $rep@$img% --yes
             done
         fi
     done
