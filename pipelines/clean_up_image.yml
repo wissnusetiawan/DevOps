@@ -15,16 +15,13 @@ schedules:
           include:
             - main
 
-
 pool:
     vmImage: ubuntu-22.04
 
 variables:
     container_registry: 'DevOpsGuy'
 
-  
 steps:
-
   - task: AzureCLI@2
     displayName: Clean Docker Image
     inputs:
