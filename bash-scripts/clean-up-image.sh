@@ -65,7 +65,7 @@ else
         old_image=$(
             az acr repository show-manifests --name "$container_registry" --repository "$rep" \
                 --orderby time_asc \
-                --query "[].digest" \
+                --query '[].digest' \
                 --output tsv
         )
         if [ -z "${old_image[@]}" ]; then
