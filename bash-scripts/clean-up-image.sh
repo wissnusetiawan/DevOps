@@ -14,6 +14,7 @@ else
 
     # Declare variables
     container_registry=$1
+    date_threshold="$(date +%Y-%m-%d -d "30 days ago")"
 
 
     # Fetch the list of repositories
@@ -53,108 +54,78 @@ else
         fi
     done
 
-    # Search for keep images than 100 in each repository
+ 
+    # Search for images older than 30 days in each repository
     echo "################################################"
-    echo "       EXECUTION OF KEEP IMAGES DELETION"
+    echo "       EXECUTION OF OLD IMAGES DELETION"
     echo "################################################"
 
 
-    keep_image=()
+    old_image=()
     echo "${registry_list[@]}" | while read -r rep; do
-        keep_image=$(
+        old_image=$(
             az acr repository show-manifests --name "$container_registry" --repository "$rep" \
-                --query "[?tags[0]==null].digest" \
-                --orderby time_desc \
-                --output tsv 
-     )
-        if [ -z "${keep_image[@]}" ]; then
-            echo "INFO: Deleting image with keep 100 from image: $rep"
+                --query "[?timestamp < '$DATE_THRESHOLD'].[digest, timestamp]" \
+                --orderby time_asc \
+                --output tsv
+        )
+        if [ -z "${old_image[@]}" ]; then
+            echo "INFO: No images older than 30 days & keep 100 images found in the repository: $rep"
         else
-            # Keep 100 images
-            echo
-            echo "${keep_image[@]}" | while read -r img; do
-                echo "WARN: Deleting image with keep 100 from image: $rep@$img"
-                az acr repository show-manifests --name "$container_registry" --repository "$rep" \
-                    | sed -n '100,$ p' | xargs -I% az acr repository delete \
-                    --name "$container_registry" --image $rep@$img% --yes
-            done
+            # Get how many images exist in the repository
+            manifest_count=$(
+                az acr repository show --name "$container_registry" --repository "$rep" --output yaml |
+                    awk '/manifestCount:/{print $NF}'
+            )
+
+            # Check if there is more than 1 image in the repository
+            if [ "$manifest_count" -ge 2 ]; then
+                echo
+                echo "The repository $rep contains a total of $manifest_count images"
+
+                # Loop through each image older than 30 days
+                echo "${old_image[@]}" | while read -r img; do
+
+                    # Get only the manifest digest without the timestamp
+                    image_manifest_only="$(echo "$img" | cut -d' ' -f1)"
+
+                    # Get the repository last update time
+                    last_update_repo=$(
+                        az acr repository show --name "$container_registry" --repository "$rep" --output yaml |
+                            awk '/lastUpdateTime:/{print $NF}' |
+                            # Remove single quote from the string
+                            sed "s/['\"]//g"
+                    )
+
+                    # Convert the repository last update time into seconds
+                    last_update_repo="$(date -d "$last_update_repo" +%s)"
+
+                    # Get the image last update time
+                    last_update_image=$(
+                        az acr repository show --name "$container_registry" --image "$rep@$image_manifest_only" --output yaml |
+                            awk '/lastUpdateTime:/{print $NF}' |
+                            # Remove single quote from the string
+                            sed "s/['\"]//g"
+                    )
+
+                    # Convert the image last update time into seconds
+                    last_update_image="$(date -d "$last_update_image" +%s)"
+
+                    if [ "$last_update_repo" -gt "$last_update_image" ]; then
+                        image_to_delete=$(
+                            az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
+                                grep -A1 'tags:' | tail -n1 | sed -n '100,$ p' | xargs -I% awk '{ print $2}'
+                        )
+
+                        # Delete images older than 30 days
+                        echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
+                        az acr repository delete --name $container_registry --image $rep@$image_manifest_only% --yes
+                    fi
+
+                done
+            else
+                echo "INFO: Nothing to do. There is only 1 image in the repository: $rep"
+            fi
         fi
     done
-
- 
-    # Search for images older and keep 100 images in each repository
-    # echo "################################################"
-    # echo "       EXECUTION OF OLD IMAGES DELETION"
-    # echo "################################################"
-
-
-    # old_image=()
-    # echo "${registry_list[@]}" | while read -r rep; do
-    #     old_image=$(
-    #         az acr repository show-manifests --name "$container_registry" --repository "$rep" \
-    #             --query "[].digest" \ 
-    #             --orderby time_asc \
-    #             --output tsv
-    #     )
-    #     if [ -z "${old_image[@]}" ]; then
-    #         echo "INFO: delete and keep 100 images found in the repository: $rep"
-    #     else
-    #         # Get how many images exist in the repository
-    #         manifest_count=$(
-    #             az acr repository show --name "$container_registry" --repository "$rep" --output yaml |
-    #                 awk '/manifestCount:/{print $NF}'
-    #         )
-
-    #         # Check if there is more than 1 image in the repository
-    #         if [ "$manifest_count" -ge 2 ]; then
-    #             echo
-    #             echo "The repository $rep contains a total of $manifest_count images"
-
-    #             # Loop through each image older
-    #             echo "${old_image[@]}" | while read -r img; do
-
-    #                 # Get only the manifest digest without the timestamp
-    #                 image_manifest_only="$(echo "$img" | cut -d' ' -f1)"
-
-                    # # Get the repository last update time
-                    # last_update_repo=$(
-                    #     az acr repository show --name "$container_registry" --repository "$rep" --output yaml |
-                    #         awk '/lastUpdateTime:/{print $NF}' |
-                    #         # Remove single quote from the string
-                    #         sed "s/['\"]//g"
-                    # )
-
-                    # # Convert the repository last update time into seconds
-                    # last_update_repo="$(date -d "$last_update_repo" +%s)"
-
-                    # # Get the image last update time
-                    # last_update_image=$(
-                    #     az acr repository show --name "$container_registry" --image "$rep@$image_manifest_only" --output yaml |
-                    #         awk '/lastUpdateTime:/{print $NF}' |
-                    #         # Remove single quote from the string
-                    #         sed "s/['\"]//g"
-                    # )
-
-                    # # Convert the image last update time into seconds
-                    # last_update_image="$(date -d "$last_update_image" +%s)"
-
-                    # if [ "$manifest_count" -gt "$last_update_image" ]; then
-                    #     image_to_delete=$(
-                    #         az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
-                    #             grep -A1 'tags:' | tail -n1 | sed -n '100,$ p' | xargs -I% awk '{ print $2}'
-                    #     )
-
-                        # Delete images and keep 100 images
-        #                 echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
-        #                 az acr repository delete --name $container_registry --image $rep@$image_manifest_only% --yes
-        #             fi
-
-        #         done
-        #     else
-        #         echo "INFO: Nothing to do. There is only 1 image in the repository: $rep"
-        #     fi
-        # fi
-    done
-# fi
-
-
+fi
