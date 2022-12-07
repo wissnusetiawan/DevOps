@@ -64,8 +64,8 @@ else
     echo "${registry_list[@]}" | while read -r rep; do
         old_image=$(
             az acr repository show-manifests --name "$container_registry" --repository "$rep" \
+                --query "[?timestamp].[digest, timestamp]" \
                 --orderby time_asc \
-                --query '[].digest' \
                 --output tsv
         )
         if [ -z "${old_image[@]}" ]; then
