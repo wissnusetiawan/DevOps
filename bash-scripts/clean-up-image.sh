@@ -65,12 +65,12 @@ else
     echo "${registry_list[@]}" | while read -r rep; do
         old_image=$(
             az acr repository show-manifests --name "$container_registry" --repository "$rep" \
-                --query "[?timestamp < '$DATE_THRESHOLD'].[digest, timestamp]" \
-                --orderby time_asc \
+                --query "[].digest" \
+                --orderby time_desc \
                 --output tsv
         )
         if [ -z "${old_image[@]}" ]; then
-            echo "INFO: No images older than 30 days & keep 100 images found in the repository: $rep"
+            echo "INFO: keep 100 images found in the repository: $rep"
         else
             # Get how many images exist in the repository
             manifest_count=$(
@@ -83,7 +83,7 @@ else
                 echo
                 echo "The repository $rep contains a total of $manifest_count images"
 
-                # Loop through each image older than 30 days
+                # Loop through each image older
                 echo "${old_image[@]}" | while read -r img; do
 
                     # Get only the manifest digest without the timestamp
@@ -117,7 +117,7 @@ else
                                 grep -A1 'tags:' | tail -n1 | sed -n '100,$ p' | xargs -I% awk '{ print $2}'
                         )
 
-                        # Delete images older than 30 days
+                        # Delete images and keep 100 images
                         echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
                         az acr repository delete --name $container_registry --image $rep@$image_manifest_only% --yes
                     fi
@@ -129,3 +129,5 @@ else
         fi
     done
 fi
+
+
