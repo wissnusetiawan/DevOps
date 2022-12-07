@@ -64,7 +64,7 @@ else
     echo "${registry_list[@]}" | while read -r rep; do
         old_image=$(
             az acr repository show-manifests --name "$container_registry" --repository "$rep" \
-                --query "[?timestamp].[digest, timestamp]" \
+                --query "[].digest" \ 
                 --orderby time_asc \
                 --output tsv
         )
@@ -113,7 +113,7 @@ else
                     if [ "$last_update_repo" -gt "$last_update_image" ]; then
                         image_to_delete=$(
                             az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
-                                grep -A1 'tags:' | tail -n1 | sed -n '100,$ p' | xargs -I% awk '{ print $2}'
+                                grep -A1 'tags:' | sed -n '100,$ p' | xargs -I% awk '{ print $2}'
                         )
 
                         # Delete images and keep 100 images
