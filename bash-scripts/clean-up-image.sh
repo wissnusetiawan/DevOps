@@ -150,10 +150,10 @@ else
         #             fi
 
         #         done
-        #     else
-        #         echo "INFO: Nothing to do. There is only 1 image in the repository: $rep"
-        #     fi
-        # fi
+            else
+                echo "INFO: Nothing to do. There is only 1 image in the repository: $rep"
+            fi
+        fi
     done
 fi
 
