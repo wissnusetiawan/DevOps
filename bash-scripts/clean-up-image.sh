@@ -88,32 +88,32 @@ else
                     # Get only the manifest digest without the timestamp
                     image_manifest_only="$(echo "$img" | cut -d' ' -f1)"
 
-                    # Get the repository last update time
-                    last_update_repo=$(
-                        az acr repository show --name "$container_registry" --repository "$rep" --output yaml |
-                            awk '/lastUpdateTime:/{print $NF}' |
-                            # Remove single quote from the string
-                            sed "s/['\"]//g"
-                    )
+                    # # Get the repository last update time
+                    # last_update_repo=$(
+                    #     az acr repository show --name "$container_registry" --repository "$rep" --output yaml |
+                    #         awk '/lastUpdateTime:/{print $NF}' |
+                    #         # Remove single quote from the string
+                    #         sed "s/['\"]//g"
+                    # )
 
-                    # Convert the repository last update time into seconds
-                    last_update_repo="$(date -d "$last_update_repo" +%s)"
+                    # # Convert the repository last update time into seconds
+                    # last_update_repo="$(date -d "$last_update_repo" +%s)"
 
-                    # Get the image last update time
-                    last_update_image=$(
-                        az acr repository show --name "$container_registry" --image "$rep@$image_manifest_only" --output yaml |
-                            awk '/lastUpdateTime:/{print $NF}' |
-                            # Remove single quote from the string
-                            sed "s/['\"]//g"
-                    )
+                    # # Get the image last update time
+                    # last_update_image=$(
+                    #     az acr repository show --name "$container_registry" --image "$rep@$image_manifest_only" --output yaml |
+                    #         awk '/lastUpdateTime:/{print $NF}' |
+                    #         # Remove single quote from the string
+                    #         sed "s/['\"]//g"
+                    # )
 
-                    # Convert the image last update time into seconds
-                    last_update_image="$(date -d "$last_update_image" +%s)"
+                    # # Convert the image last update time into seconds
+                    # last_update_image="$(date -d "$last_update_image" +%s)"
 
-                    if [ "$last_update_repo" -gt "$last_update_image" ]; then
+                    if [ "$manifest_count" -ge 2 ]; then
                         image_to_delete=$(
                             az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
-                                grep -A1 'tags:' | sed -n '100,$ p' | xargs -I% awk '{ print $2}'
+                                grep -A1 'tags:' | tail -n1 | sed -n '100,$ p' | xargs -I% awk '{ print $2}'
                         )
 
                         # Delete images and keep 100 images
