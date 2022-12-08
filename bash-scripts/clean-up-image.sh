@@ -54,6 +54,25 @@ else
         fi
     done
 
+
+    # Search for images older than 30 days in each repository
+    echo "################################################"
+    echo "       EXECUTION OF OLD IMAGES DELETION"
+    echo "################################################"
+	@@ -64,8 +64,8 @@ else
+    echo "${registry_list[@]}" | while read -r rep; do
+        old_image=$(
+            az acr repository show-manifests --name "$container_registry" --repository "$rep" \
+                --query "[].digest" \
+                --orderby time_desc \
+                --output tsv
+        )
+        if [ -z "${old_image[@]}" ]; then
+	@@ -128,3 +128,9 @@ else
+        fi
+    done
+fi
+
  
     # Search for older and keep 100 images in each repository
     echo "################################################"
