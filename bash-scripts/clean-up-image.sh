@@ -155,10 +155,10 @@ else
     #                     az acr repository delete --name $container_registry --image $rep@$image_manifest_only% --yes
     #                 fi
 
-                done
+                # done
             # else
             #     echo "INFO: Nothing to do. There is only 100 image in the repository: $rep"
             # fi
-        fi
-    done
+    #     fi
+    # done
 fi
