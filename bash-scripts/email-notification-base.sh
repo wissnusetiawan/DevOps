@@ -6,7 +6,7 @@ set -e
     # Declare variables
     SENDER=$1
     RECIPIENT=$2
-    API_KEY=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
+    API_KEY=$3
 
     function usage() {
         echo "ERROR: Missing or invalid arguments!"
