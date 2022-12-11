@@ -11,7 +11,7 @@ pool:
     vmImage: ubuntu-latest
 
 variables:
-    URL: 
+    API_KEY: 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
     SENDER: wisnu@clade.ventures
     RECIPIENT: wissnusetiawan@gmail.com
     System.Debug: true
@@ -25,5 +25,5 @@ steps:
       scriptType: 'bash'
       scriptLocation: 'scriptPath'
       scriptPath: '$(System.DefaultWorkingDirectory)/bash-scripts/email-notification-sendgrid.sh'
-      arguments: '$(URL) $(SENDER) $(RECIPIENT)'
+      arguments: '$(SENDER) $(RECIPIENT) $(API_KEY)'
 
