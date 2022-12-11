@@ -3,6 +3,13 @@
 # Stop execution on any error
 set -e
 
+# Check if correct parameters were passed
+msg="\tUsage:\t$0 <SENDER> <RECIPIENT> <API_KEY> \n"
+if [ $# -ne 1 ]; then
+    echo -e $msg
+    exit -1
+else
+
     # Declare variables
     SENDER=$1
     RECIPIENT=$2
@@ -10,19 +17,18 @@ set -e
 
     function usage() {
         echo "ERROR: Missing or invalid arguments!"
-        echo "Usage: ${0} URL SENDER RECIPIENT PORT (OPTIONAL)"
+        echo "Usage: ${0} SENDER RECIPIENT API_KEY (OPTIONAL)"
         exit 1
     }
 
     function send_email() {
         local EMAIL_API="https://api.sendgrid.com/v3/mail/send"
 
-        local SUBJECT="KeyVault secret ${SECRET} about to expire"
+        local SUBJECT="Unit Test Result"
 
-        local MESSAGE="<p> Dear Site Reliability Engineer, </p> \
-            <p> This is to notify you that the Key Vault secret <b>${SECRET}</b> will expire on <b>${SECRET_EXPIRY_DATE_SHORT}</b>. </p> \
-            <p> Please ensure the secret is rotated in a timely fashion. There are ${DATE_DIFF} days remaining. </p> \
-            <p> Sincerely yours, <br>DevOps Enterprise </p>"
+        local MESSAGE="<p> Hi </p> \
+            <p> This is to notify you that the unit test result. </p> \
+            <p> Sincerely yours, <br> DevOps Team </p>"
 
         local REQUEST_DATA='{
             "personalizations": [
