@@ -11,16 +11,19 @@ pool:
     vmImage: ubuntu-latest
 
 variables:
-    container_registry: 'DevOpsGuy'
+    URL: 
+    SENDER: wisnu@clade.ventures
+    RECIPIENT: wissnusetiawan@gmail.com
+    System.Debug: true
 
 steps:
   - task: AzureCLI@2
-    displayName: Clean Docker Image
+    displayName: Send Result Unit Test
     inputs:
       azureSubscription: 'That DevOps Guy'
       workingDirectory: '$(System.DefaultWorkingDirectory)/bash-scripts/'
       scriptType: 'bash'
       scriptLocation: 'scriptPath'
-      scriptPath: '$(System.DefaultWorkingDirectory)/bash-scripts/clean-up-image.sh'
-      arguments: '$(container_registry)'
+      scriptPath: '$(System.DefaultWorkingDirectory)/bash-scripts/email-notification-sendgrid.sh'
+      arguments: '$(URL) $(SENDER) $(RECIPIENT)'
 
