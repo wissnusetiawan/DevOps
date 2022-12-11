@@ -3,8 +3,8 @@
 # Stop execution on any error
 set -e
 
-# Check if correct parameters were passed
-msg="\tUsage:\t$0 <SENDER> <RECIPIENT> <API_KEY> \n"
+Check if correct parameters were passed
+msg="\tUsage:\t$0 <SENDER> <RECIPIENT> <API_KEY>\n"
 if [ $# -ne 1 ]; then
     echo -e $msg
     exit -1
@@ -15,11 +15,11 @@ else
     RECIPIENT=$2
     API_KEY=$3
 
-    function usage() {
-        echo "ERROR: Missing or invalid arguments!"
-        echo "Usage: ${0} SENDER RECIPIENT API_KEY (OPTIONAL)"
-        exit 1
-    }
+    # function usage() {
+    #     echo "ERROR: Missing or invalid arguments!"
+    #     echo "Usage: ${0} SENDER RECIPIENT API_KEY (OPTIONAL)"
+    #     exit 1
+    # }
 
     function send_email() {
         local EMAIL_API="https://api.sendgrid.com/v3/mail/send"
