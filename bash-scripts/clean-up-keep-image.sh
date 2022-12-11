@@ -1,5 +1,12 @@
 #!/bin/bash
 
+######################################################################
+# Script Name    : clean-up-image.sh
+# Description    : Used to clean up container registries by deleting untagged (dangling) images and keep 100 images
+# Args           : container_registry
+# Author         : Wisnu Setiawan <wissnusetiawan@gmail.com>
+######################################################################
+
 # Stop execution on any error
 set -e
 
