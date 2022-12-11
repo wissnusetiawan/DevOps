@@ -11,7 +11,8 @@ pool:
     vmImage: ubuntu-latest
 
 variables:
-    API_KEY: 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
+    API_KEY: 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
+
     SENDER: wisnu@clade.ventures
     RECIPIENT: wissnusetiawan@gmail.com
     System.Debug: true
