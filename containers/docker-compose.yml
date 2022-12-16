@@ -1,0 +1,23 @@
+version: '3.7'
+services:
+  hsolifrontend:
+    container_name: hsolifrontend
+    image: hso/frontend:${version}
+    build:
+      context: ./
+    ports:
+      - 6051
+    volumes:
+      - ./:/usr/src/app
+    restart: unless-stopped
+    labels:
+      - traefik.http.routers.hsolifrontend.entrypoints=websecure
+      - traefik.http.routers.hsolifrontend.tls=true
+      - traefik.http.services.hsolifrontend.loadbalancer.server.port=6051
+      - traefik.http.routers.hsolifrontend.rule=Host(`intelligence-hso.lokasi.dev`)
+
+networks:
+  default:
+    external:
+      name: li-networks
+
