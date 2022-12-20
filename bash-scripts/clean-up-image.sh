@@ -71,7 +71,8 @@ else
     old_image=()
     echo "${registry_list[@]}" | while read -r rep; do
         old_image=$(
-            az acr repository show-manifests --name "$container_registry" --repository "$rep" --top 5 \
+            az acr repository show-manifests --name "$container_registry" --repository "$rep" \
+                --query "[?tags[0]==null].digest" \
                 --orderby time_desc \
                 --output tsv
         )
@@ -96,41 +97,44 @@ else
                     image_manifest_only="$(echo "$img" | cut -d' ' -f1)"
 
                     # Get the repository last update time
-                    # last_update_repo=$(
-                    #     az acr repository show --name "$container_registry" --repository "$rep" --output yaml |
-                    #         awk '/lastUpdateTime:/{print $NF}' |
-                    #         # Remove single quote from the string
-                    #         sed "s/['\"]//g"
-                    # )
+                    keep=$(
+                        az acr repository show --name "$container_registry" --repository "$rep" --output json \
+                            --orderby time_desc \
+                            --top 2 \
+                            --output tsv
+                    )
 
                     # Convert the repository last update time into seconds
                     # last_update_repo="$(date -d "$last_update_repo" +%s)"
 
                     # Get the image last update time
-                    # last_update_image=$(
-                    #     az acr repository show --name "$container_registry" --image "$rep@$image_manifest_only" --output yaml |
-                    #         awk '/lastUpdateTime:/{print $NF}' |
-                    #         # Remove single quote from the string
-                    #         sed "s/['\"]//g"
-                    # )
+                    tags=$(
+                        az acr repository show --name "$container_registry" --image "$rep@$image_manifest_only" --output json |
+                            awk '/lastUpdateTime:/{print $NF}' |
+                            # Remove single quote from the string
+                            sed "s/['\"]//g"
+                    )
 
                     # Convert the image last update time into seconds
                     # last_update_image="$(date -d "$last_update_image" +%s)"
 
-                    # if [ "$last_update_repo" -gt "$last_update_image" ]; then
-                    #     image_to_delete=$(
-                    #         az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
-                    #             grep -A1 'tags:' | tail -n1 | awk '{ print $2}'
-                    #     )
+                    for tag in "${tags[@]}"; do
+                    if [[ " ${keep[*]} " =~ " ${tag} " ]]; then
+                        image_to_delete=$(
+                            az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
+                                grep -A1 'tags:' | tail -n1 | awk '{ print $2}'
+                        )
+                        echo " Keep: ${tag}"
 
-                    #     # Delete images older than 30 days
-                    #     echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
+                        # Delete images older than 30 days
+                        echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
                     #     # az acr repository delete --name $container_registry --image $rep@$image_manifest_only% --yes
-                    # fi
+                    fi
 
                 done
             else
-                echo "INFO: Nothing to do. There is only 1 image in the repository: $rep"
+                echo " Delete: ${tag}"
+                # echo "INFO: Nothing to do. There is only 1 image in the repository: $rep"
             fi
         fi
     done
