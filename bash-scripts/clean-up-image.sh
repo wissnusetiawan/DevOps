@@ -98,7 +98,7 @@ else
 
                     # Get the repository last update time
                     keep=($(
-                        az acr repository show --name "$container_registry" --repository "$rep" \
+                        az acr repository show-tags --name "$container_registry" --repository "$rep" \
                             --orderby time_desc \
                             --top 2 \
                             --output tsv
@@ -109,7 +109,7 @@ else
 
                     # Get the image last update time
                     tags=($(
-                        az acr repository show --name "$container_registry" --image "$rep@$image_manifest_only" \
+                        az acr repository show-tags --name "$container_registry" --image "$rep@$image_manifest_only" \
                             --orderby time_desc \
                             --output tsv
                     ))
@@ -117,7 +117,7 @@ else
                     # Convert the image last update time into seconds
                     # last_update_image="$(date -d "$last_update_image" +%s)"
 
-                    for tag in "${tags[@]}"; do
+                    # for tag in "${tags[@]}"; do
                     if [[ " ${keep[*]} " =~ " ${tag} " ]]; then
                     # if [ "$keep" -gt "$tags" ]; then
                         image_to_delete=$(
