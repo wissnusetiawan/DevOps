@@ -117,7 +117,7 @@ else
                     # Convert the image last update time into seconds
                     # last_update_image="$(date -d "$last_update_image" +%s)"
 
-                    # for tag in "${tags[@]}"; do
+                    for tag in "${tags[@]}"; do
                     if [[ " ${keep[*]} " =~ " ${tag} " ]]; then
                     # if [ "$keep" -gt "$tags" ]; then
                         image_to_delete=$(
