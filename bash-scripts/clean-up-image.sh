@@ -100,7 +100,7 @@ else
                     keep=($(
                         az acr repository show-tags --name "$container_registry" --repository "$rep" \
                             --orderby time_desc \
-                            --top 2 \
+                            --top 100 \
                             --output tsv
                     ))
 
@@ -122,12 +122,12 @@ else
                     # if [ "$keep" -gt "$tags" ]; then
                         image_to_delete=$(
                             az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output json |
-                                grep -A1 'tags:' | tail -n1 | awk '{ print $2}'
+                                grep -A1 'tags:' | tail -n1 | sed -n '3,$ p' | xargs -I% awk '{ print $2}'
                         )
 
                         # Delete images older than 30 days
                         echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
-                        az acr repository delete --name $container_registry --image $rep@$image_manifest_only --yes
+                        az acr repository delete --name $container_registry --image $rep@$image_manifest_only% --yes
                     fi
 
                 done
