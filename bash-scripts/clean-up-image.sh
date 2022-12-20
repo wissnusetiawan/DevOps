@@ -118,8 +118,8 @@ else
                     # Convert the image last update time into seconds
                     # last_update_image="$(date -d "$last_update_image" +%s)"
 
-                    for tag in "${tags[@]}"; do
-                    if [[ " ${keep[*]} " =~ " ${tag} " ]]; then
+                    # for tag in "${tags[@]}"; do
+                    if [ "$keep" -gt "$tags" ]; then
                         image_to_delete=$(
                             az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
                                 grep -A1 'tags:' | tail -n1 | awk '{ print $2}'
