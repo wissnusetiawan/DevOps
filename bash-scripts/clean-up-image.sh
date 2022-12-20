@@ -70,11 +70,11 @@ else
 
     old_image=()
     echo "${registry_list[@]}" | while read -r rep; do
-        old_image=($(
-            az acr repository show-tags --name "$container_registry" --repository "$rep" --top 5 \
+        old_image=$(
+            az acr repository show-manifests --name "$container_registry" --repository "$rep" --top 5 \
                 --orderby time_desc \
                 --output tsv
-        ))
+        )
         if [ -z "${old_image[@]}" ]; then
             echo "INFO: No images older found in the repository: $rep"
         else
@@ -96,37 +96,37 @@ else
                     image_manifest_only="$(echo "$img" | cut -d' ' -f1)"
 
                     # Get the repository last update time
-                    last_update_repo=$(
-                        az acr repository show --name "$container_registry" --repository "$rep" --output yaml |
-                            awk '/lastUpdateTime:/{print $NF}' |
-                            # Remove single quote from the string
-                            sed "s/['\"]//g"
-                    )
+                    # last_update_repo=$(
+                    #     az acr repository show --name "$container_registry" --repository "$rep" --output yaml |
+                    #         awk '/lastUpdateTime:/{print $NF}' |
+                    #         # Remove single quote from the string
+                    #         sed "s/['\"]//g"
+                    # )
 
                     # Convert the repository last update time into seconds
-                    last_update_repo="$(date -d "$last_update_repo" +%s)"
+                    # last_update_repo="$(date -d "$last_update_repo" +%s)"
 
                     # Get the image last update time
-                    last_update_image=$(
-                        az acr repository show --name "$container_registry" --image "$rep@$image_manifest_only" --output yaml |
-                            awk '/lastUpdateTime:/{print $NF}' |
-                            # Remove single quote from the string
-                            sed "s/['\"]//g"
-                    )
+                    # last_update_image=$(
+                    #     az acr repository show --name "$container_registry" --image "$rep@$image_manifest_only" --output yaml |
+                    #         awk '/lastUpdateTime:/{print $NF}' |
+                    #         # Remove single quote from the string
+                    #         sed "s/['\"]//g"
+                    # )
 
                     # Convert the image last update time into seconds
-                    last_update_image="$(date -d "$last_update_image" +%s)"
+                    # last_update_image="$(date -d "$last_update_image" +%s)"
 
-                    if [ "$last_update_repo" -gt "$last_update_image" ]; then
-                        image_to_delete=$(
-                            az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
-                                grep -A1 'tags:' | tail -n1 | awk '{ print $2}'
-                        )
+                    # if [ "$last_update_repo" -gt "$last_update_image" ]; then
+                    #     image_to_delete=$(
+                    #         az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
+                    #             grep -A1 'tags:' | tail -n1 | awk '{ print $2}'
+                    #     )
 
-                        # Delete images older than 30 days
-                        echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
-                        # az acr repository delete --name $container_registry --image $rep@$image_manifest_only% --yes
-                    fi
+                    #     # Delete images older than 30 days
+                    #     echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
+                    #     # az acr repository delete --name $container_registry --image $rep@$image_manifest_only% --yes
+                    # fi
 
                 done
             else
