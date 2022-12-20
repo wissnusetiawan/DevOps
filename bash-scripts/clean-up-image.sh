@@ -71,8 +71,7 @@ else
     old_image=()
     echo "${registry_list[@]}" | while read -r rep; do
         old_image=$(
-            az acr repository show-manifests --name "$container_registry" --repository "$rep" --top 5 \
-                --query "[?tags[0]==null].digest" \
+            az acr repository show-tags --name "$container_registry" --repository "$rep" --top 5 \
                 --orderby time_desc \
                 --output tsv
         )
