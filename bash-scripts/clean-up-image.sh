@@ -127,7 +127,7 @@ else
 
                         # Delete images older than 30 days
                         echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
-                    #     # az acr repository delete --name $container_registry --image $rep@$image_manifest_only% --yes
+                        az acr repository delete --name $container_registry --image $rep@$image_manifest_only --yes
                     fi
 
                 done
