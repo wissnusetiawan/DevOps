@@ -46,7 +46,7 @@ else
         untagged_image=$(
             az acr repository show-manifests --name "$container_registry" --repository "$rep" \
                 --query "[?tags[0]==null].digest" \
-                --orderby time_asc \
+                --orderby time_desc \
                 --output tsv
         )
         if [ -z "${untagged_image[@]}" ]; then
@@ -71,9 +71,9 @@ else
     old_image=()
     echo "${registry_list[@]}" | while read -r rep; do
         old_image=$(
-            az acr repository show-manifests --name "$container_registry" --repository "$rep" \
-                --query "[?timestamp < '$DATE_THRESHOLD'].[digest, timestamp]" \
-                --orderby time_asc \
+            az acr repository show-manifests --name "$container_registry" --repository "$rep" --top 5 \
+                --query "[?tags[0]==null].digest" \
+                --orderby time_desc \
                 --output tsv
         )
         if [ -z "${old_image[@]}" ]; then
@@ -121,12 +121,12 @@ else
                     if [ "$last_update_repo" -gt "$last_update_image" ]; then
                         image_to_delete=$(
                             az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
-                                grep -A1 'tags:' | tail -n1 | sed -n '100,$ p' | xargs -I% awk '{ print $2}'
+                                grep -A1 'tags:' | tail -n1 | awk '{ print $2}'
                         )
 
                         # Delete images older than 30 days
                         echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
-                        az acr repository delete --name $container_registry --image $rep@$image_manifest_only% --yes
+                        # az acr repository delete --name $container_registry --image $rep@$image_manifest_only% --yes
                     fi
 
                 done
