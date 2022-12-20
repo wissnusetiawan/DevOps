@@ -124,7 +124,6 @@ else
                             az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
                                 grep -A1 'tags:' | tail -n1 | awk '{ print $2}'
                         )
-                        echo " Keep: ${tag}"
 
                         # Delete images older than 30 days
                         echo "WARN: Deleting image with tag: $image_to_delete from repository: $rep"
@@ -133,7 +132,6 @@ else
 
                 done
             else
-            
                 echo "INFO: Nothing to do. There is only 1 image in the repository: $rep"
             fi
         fi
