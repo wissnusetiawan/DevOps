@@ -109,10 +109,9 @@ else
 
                     # Get the image last update time
                     tags=$(
-                        az acr repository show --name "$container_registry" --image "$rep@$image_manifest_only" --output json |
-                            awk '/lastUpdateTime:/{print $NF}' |
-                            # Remove single quote from the string
-                            sed "s/['\"]//g"
+                        az acr repository show --name "$container_registry" --image "$rep@$image_manifest_only" --output json \
+                            --orderby time_desc \
+                            --output tsv
                     )
 
                     # Convert the image last update time into seconds
