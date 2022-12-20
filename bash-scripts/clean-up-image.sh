@@ -70,11 +70,11 @@ else
 
     old_image=()
     echo "${registry_list[@]}" | while read -r rep; do
-        old_image=$(
+        old_image=($(
             az acr repository show-tags --name "$container_registry" --repository "$rep" --top 5 \
                 --orderby time_desc \
                 --output tsv
-        )
+        ))
         if [ -z "${old_image[@]}" ]; then
             echo "INFO: No images older found in the repository: $rep"
         else
@@ -89,7 +89,7 @@ else
                 echo
                 echo "The repository $rep contains a total of $manifest_count images"
 
-                # Loop through each image older than 30 days
+                # Loop through each image older
                 echo "${old_image[@]}" | while read -r img; do
 
                     # Get only the manifest digest without the timestamp
