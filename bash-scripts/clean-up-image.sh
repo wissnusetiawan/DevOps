@@ -133,8 +133,8 @@ else
 
                 done
             else
-                echo " Delete: ${tag}"
-                # echo "INFO: Nothing to do. There is only 1 image in the repository: $rep"
+            
+                echo "INFO: Nothing to do. There is only 1 image in the repository: $rep"
             fi
         fi
     done
