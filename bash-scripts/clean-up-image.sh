@@ -21,7 +21,7 @@ else
 
     # Declare variables
     container_registry=$1
-    date_threshold="$(date +%Y-%m-%d -d "30 days ago")"
+    # date_threshold="$(date +%Y-%m-%d -d "30 days ago")"
 
 
     # Fetch the list of repositories
@@ -77,7 +77,7 @@ else
                 --output tsv
         )
         if [ -z "${old_image[@]}" ]; then
-            echo "INFO: No images older than 30 days & keep 100 images found in the repository: $rep"
+            echo "INFO: No images older found in the repository: $rep"
         else
             # Get how many images exist in the repository
             manifest_count=$(
