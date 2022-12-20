@@ -81,7 +81,7 @@ else
         else
             # Get how many images exist in the repository
             manifest_count=$(
-                az acr repository show --name "$container_registry" --repository "$rep" --output yaml |
+                az acr repository show --name "$container_registry" --repository "$rep" --output json |
                     awk '/manifestCount:/{print $NF}'
             )
 
@@ -97,22 +97,22 @@ else
                     image_manifest_only="$(echo "$img" | cut -d' ' -f1)"
 
                     # Get the repository last update time
-                    keep=$(
+                    keep=($(
                         az acr repository show --name "$container_registry" --repository "$rep" \
                             --orderby time_desc \
                             --top 2 \
                             --output tsv
-                    )
+                    ))
 
                     # Convert the repository last update time into seconds
                     # last_update_repo="$(date -d "$last_update_repo" +%s)"
 
                     # Get the image last update time
-                    tags=$(
+                    tags=($(
                         az acr repository show --name "$container_registry" --image "$rep@$image_manifest_only" \
                             --orderby time_desc \
                             --output tsv
-                    )
+                    ))
 
                     # Convert the image last update time into seconds
                     # last_update_image="$(date -d "$last_update_image" +%s)"
@@ -121,7 +121,7 @@ else
                     if [[ " ${keep[*]} " =~ " ${tag} " ]]; then
                     # if [ "$keep" -gt "$tags" ]; then
                         image_to_delete=$(
-                            az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
+                            az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output json |
                                 grep -A1 'tags:' | tail -n1 | awk '{ print $2}'
                         )
 
