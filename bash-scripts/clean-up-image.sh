@@ -81,7 +81,7 @@ else
         else
             # Get how many images exist in the repository
             manifest_count=$(
-                az acr repository show --name "$container_registry" --repository "$rep" --output json |
+                az acr repository show --name "$container_registry" --repository "$rep" --output yaml |
                     awk '/manifestCount:/{print $NF}'
             )
 
@@ -118,10 +118,10 @@ else
                     # last_update_image="$(date -d "$last_update_image" +%s)"
 
                     # for tag in "${tags[@]}"; do
-                    if [[ " ${keep[*]} " =~ " ${tag} " ]]; then
-                    # if [ "$keep" -gt "$tags" ]; then
+                    # if [[ " ${keep[*]} " =~ " ${tag} " ]]; then
+                    if [ "$keep" -gt "$tags" ]; then
                         image_to_delete=$(
-                            az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output json |
+                            az acr repository show --name "$container_registry" --image "$rep"@"$image_manifest_only" --output yaml |
                                 grep -A1 'tags:' | tail -n1 | sed -n '3,$ p' | xargs -I% awk '{ print $2}'
                         )
 
