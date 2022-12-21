@@ -71,7 +71,8 @@ else
     old_image=()
     echo "${registry_list[@]}" | while read -r rep; do
         old_image=$(
-            az acr manifest list-metadata --name "$container_registry" --repository "$rep" \
+            az acr repository show-manifests --name "$container_registry" --repository "$rep" \
+                --query "[].digest" \
                 --orderby time_desc \
                 --output tsv
         )
