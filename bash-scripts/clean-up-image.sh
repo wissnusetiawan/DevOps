@@ -74,7 +74,7 @@ else
             az acr repository show-manifests --name "$container_registry" --repository "$rep" \
                 --query "[].digest" \
                 --orderby time_desc \
-                --output tsv
+                --output table
         )
         if [ -z "${old_image[@]}" ]; then
             echo "INFO: No images older found in the repository: $rep"
@@ -100,7 +100,7 @@ else
                     keep=($(
                         az acr repository show-tags --name "$container_registry" --repository "$rep" \
                             --orderby time_desc \
-                            --top 100 \
+                            --top 3 \
                             --output tsv
                     ))
 
