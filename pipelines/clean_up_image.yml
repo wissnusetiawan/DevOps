@@ -20,6 +20,7 @@ pool:
 
 variables:
     container_registry: 'DevOpsGuy'
+    total_keep: '3'
 
 steps:
   - task: AzureCLI@2
@@ -30,5 +31,5 @@ steps:
       scriptType: 'bash'
       scriptLocation: 'scriptPath'
       scriptPath: '$(System.DefaultWorkingDirectory)/bash-scripts/clean-up-image.sh'
-      arguments: '$(container_registry)'
+      arguments: '$(container_registry) $(total_keep)'
 
